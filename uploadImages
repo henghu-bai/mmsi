@@ -1,0 +1,96 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Services;
+using System.IO;
+
+namespace WebApplication1
+{
+    /// <summary>
+    /// WebService1 的摘要说明
+    /// </summary>
+    [WebService(Namespace = "http://tempuri.org/")]
+    [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
+    [System.ComponentModel.ToolboxItem(false)]
+    // 若要允许使用 ASP.NET AJAX 从脚本中调用此 Web 服务，请取消对下行的注释。
+    // [System.Web.Script.Services.ScriptService]
+    public class WebService1 : System.Web.Services.WebService
+    {
+
+        [WebMethod]
+        public string HelloWorld()
+        {
+            return "Hello World";
+        }
+        /// <summary>
+        /// 图片上传方法，用于上传图片
+        /// </summary>
+        /// <param name="img">byte类型的数组，用于存储图片文件</param>
+        /// <param name="imgName">上传时文件的图片名称</param>
+        /// <param name="FolderName">文件需要上传到的目录</param>
+        /// <returns>(0)成功(1)失败(2)上传的文件不存在</returns>
+        [WebMethod]
+        public int UplaodImg(byte[] img, string imgName,string FolderName,int FileLength) {
+            if (createDirectory(FolderName))
+            {
+                try
+                {
+                    string path = Server.MapPath("~/") + FolderName + imgName; //存储图片的完整路径
+                    if (img.Length <= 0)
+                        return 2;
+                    FileStream fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write);
+                    fs.Write(img, 0, FileLength);
+                    fs.Close();
+                }
+                catch
+                {
+                    return 1;
+                }
+                return 0;
+            }
+            return 1;
+        }
+
+        /// <summary>
+        /// 删除图片
+        /// </summary>
+        /// <param name="imgName">图片名称</param>
+        /// <param name="FolderName">存放的目录名称</param>
+        /// <returns>(0)成功，(1)失败，(2)文件不存在</returns>
+        [WebMethod]
+        public int DelImg(string imgName, string FolderName) {
+            string path = Server.MapPath("~/") + FolderName + imgName;
+            try
+            {
+                if (!File.Exists(path))
+                    return 2;
+                File.Delete(path);
+            }
+            catch {
+                return 1;
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// 建立存储图片目录
+        /// </summary>
+        /// <param name="FolderName">目录名称</param>
+        /// <returns>返回是否操作成功的布尔值</returns>
+        private bool createDirectory(string FolderName) {
+            //判断目录是否存在，若存在直接返回true
+            if (Directory.Exists(Server.MapPath("~/") + FolderName))
+                return true;
+
+            //如果不存在则创建新的目录
+            try {
+                Directory.CreateDirectory(Server.MapPath("/") + FolderName);
+            }
+            catch{
+                return false;
+            }
+            return true;
+        }
+    }
+}

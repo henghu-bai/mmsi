@@ -10,10 +10,7 @@ sddfsfsfsfsdf
 123
 
 
-<<<<<<< HEAD
+
 
 adasdfsdfsf123456
-=======
-
->>>>>>> testing
 
